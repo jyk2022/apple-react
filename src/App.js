@@ -1,15 +1,34 @@
 import { useState } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Routes, Route, useNavigate, Outlet } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Card from './componet/Card.jsx';
-import data from './data.js';
-import { Routes, Route, useNavigate, Outlet } from 'react-router-dom';
 import Detail from './routes/Detail';
+import data from './data.js';
+import axios from 'axios';
 
 function App() {
-    let [shoes] = useState(data);
-    let navi = useNavigate();
+    const [shoes, setShoes] = useState(data);
+    const navi = useNavigate();
+    const [buttonClicked, setButtonClicked] = useState(false);
+    const [pageNumber, setPageNumber] = useState(1); // 새로운 state 변수 추가
+
+    const fetchMoreData = () => {
+        let number = pageNumber; // 현재 페이지 번호로 설정
+        axios
+            .get(`https://codingapple1.github.io/shop/data` + number + `.json`)
+            .then((response) => {
+                console.log(response.data);
+                let copy = [...shoes, ...response.data];
+                setShoes(copy);
+                setButtonClicked(true);
+                setPageNumber(pageNumber + 1); // 페이지 번호를 업데이트
+            })
+            .catch((error) => {
+                console.log('실패함', error);
+            });
+    };
 
     return (
         <>
@@ -60,6 +79,7 @@ function App() {
                                         <Card shoes={shoe} key={shoe.id} />
                                     ))}
                                 </div>
+                                <button onClick={fetchMoreData}>더보기</button>
                             </div>
                         </>
                     }
@@ -67,12 +87,12 @@ function App() {
                 <Route path="/Detail/:id" element={<Detail shoes={shoes} />} />
                 <Route path="*" element={<div>404 페이지입니다</div>} />
                 <Route path="/About" element={<About />}>
-                    <Route path="meber" element={<div>멤버임</div>} />
-                    <Route path="location" element={<div>위치정보임</div>} />
+                    <Route path="member" element={<div>회사 멤버</div>} />
+                    <Route path="location" element={<div>회사 위치</div>} />
                 </Route>
                 <Route path="/Event" element={<Event />}>
-                    <Route path="Yarn" element={<div>첫 주문시 양배추즙 서비슨</div>} />
-                    <Route path="Qupon" element={<div>쿠폰정보임</div>} />
+                    <Route path="yarn" element={<div>첫 주문시 양배추즙 증정</div>} />
+                    <Route path="coupon" element={<div>쿠폰 정보</div>} />
                 </Route>
             </Routes>
         </>

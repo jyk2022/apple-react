@@ -9,8 +9,9 @@ function Detail(props) {
     });
 
     let [alertCnt, setAlertCnt] = useState(2);
-    let [alert, setalert] = useState(true);
+    let [alert, setAlert] = useState(true);
     let intervalId;
+    let TimeOut;
 
     useEffect(() => {
         //mount 될 때와 업데이트 될 때 실행됨.
@@ -19,24 +20,27 @@ function Detail(props) {
         }
 
         intervalId = setInterval(() => {
-            setAlertCnt((alert) => alert - 1);
+            setAlertCnt((alertCnt) => alertCnt - 1);
         }, 1000);
 
-        setTimeout(() => {
-            setalert(false);
+        TimeOut = setTimeout(() => {
+            setAlert(false);
         }, 2000);
 
         return () => {
+            // 여기 작성되는 코드는 useEffet가 실행되기 전에 실행할 때 사용함.
+            //클린업 코드 사용할 때
+            clearTimeout(TimeOut);
             clearInterval(intervalId);
         };
-    }, []);
+    }, [shoes]);
 
     let [count, setCount] = useState(0);
 
-    const { title, content, price, img } = shoes;
+    const { productId, title, content, price, img } = shoes;
     return (
         <div className="container">
-            {alert == true ? <div className="alert alert-warnig"> {alertCnt}초 이내 구매시 할인</div> : null}
+            {alert && <div className="alert alert-warning">{alertCnt}초 이내 구매시 할인</div>}
             <DivTag>
                 <YellowBtn
                     bg="blue"
@@ -50,7 +54,15 @@ function Detail(props) {
             {count}
             <div className="row">
                 <div className="col-md-6">
-                    <img src={process.env.PUBLIC_URL + '/' + img} width="80%" alt="이미지" />
+                    <img
+                        src={
+                            id >= 1 && id <= 8
+                                ? 'https://codingapple1.github.io/shop/shoes' + id + '.jpg'
+                                : process.env.PUBLIC_URL + '/' + img
+                        }
+                        width="80%"
+                        alt="이미지"
+                    />
                 </div>
                 <div className="col-md-6">
                     <h4>상품명: {title}</h4>
