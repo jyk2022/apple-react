@@ -12,21 +12,24 @@ function App() {
     const [shoes, setShoes] = useState(data);
     const navi = useNavigate();
     const [buttonClicked, setButtonClicked] = useState(false);
-    const [pageNumber, setPageNumber] = useState(1); // 새로운 state 변수 추가
-
+    const [pageNumber, setPageNumber] = useState(2); // 새로운 state 변수 추가
+    const [isLoading, setIsLoading] = useState(false);
     const fetchMoreData = () => {
-        let number = pageNumber; // 현재 페이지 번호로 설정
+        setIsLoading(true);
+        let number = pageNumber;
         axios
-            .get(`https://codingapple1.github.io/shop/data` + number + `.json`)
+            .get(`https://codingapple1.github.io/shop/data${number}.json`)
             .then((response) => {
                 console.log(response.data);
                 let copy = [...shoes, ...response.data];
                 setShoes(copy);
                 setButtonClicked(true);
-                setPageNumber(pageNumber + 1); // 페이지 번호를 업데이트
+                setPageNumber(pageNumber + 1);
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.log('실패함', error);
+                setIsLoading(false);
             });
     };
 
@@ -79,7 +82,11 @@ function App() {
                                         <Card shoes={shoe} key={shoe.id} />
                                     ))}
                                 </div>
-                                <button onClick={fetchMoreData}>더보기</button>
+                                {isLoading ? (
+                                    <div>Loading...</div>
+                                ) : pageNumber <= 3 ? (
+                                    <button onClick={fetchMoreData}>더보기</button>
+                                ) : null}
                             </div>
                         </>
                     }
