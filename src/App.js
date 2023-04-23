@@ -4,6 +4,7 @@ import { Routes, Route, useNavigate, Outlet } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Card from './componet/Card.jsx';
+import Cart from './routes/Cart';
 import Detail from './routes/Detail';
 import data from './data.js';
 import axios from 'axios';
@@ -55,7 +56,7 @@ function App() {
                         </Nav.Link>
                         <Nav.Link
                             onClick={() => {
-                                navi('/Detail');
+                                navi('/cart');
                             }}
                         >
                             Cart
@@ -91,6 +92,7 @@ function App() {
                         </>
                     }
                 />
+                <Route path="/cart" element={<Cart />} />
                 <Route path="/Detail/:id" element={<Detail shoes={shoes} />} />
                 <Route path="*" element={<div>404 페이지입니다</div>} />
                 <Route path="/About" element={<About />}>
