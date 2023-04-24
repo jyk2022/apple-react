@@ -1,11 +1,18 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { Routes, Route, useNavigate, Outlet } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import Card from './componet/Card.jsx';
 import Cart from './routes/Cart';
 import Detail from './routes/Detail';
+
+//lazy 문법으로도 똑같이 import가 가능한데 이 경우엔
+//"Detail 컴포넌트가 필요해지면 import 해주세요" 라는 뜻이 됩니다.
+// const Detail = lazy(() => import('./routes/Detail.jsx'));
+// const Cart = lazy(() => import('./routes/Cart'));
+
 import data from './data.js';
 import axios from 'axios';
 import { useQuery } from 'react-query';
@@ -102,6 +109,7 @@ function App() {
                     <Nav className="ms-auto">{result.isLoading ? '로딩중....' : result.data.name}</Nav>
                 </Container>
             </Navbar>
+
             <Routes>
                 <Route
                     path="/"
