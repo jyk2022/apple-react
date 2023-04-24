@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { Routes, Route, useNavigate, Outlet } from 'react-router-dom';
 import './App.css';
@@ -8,9 +8,28 @@ import Cart from './routes/Cart';
 import Detail from './routes/Detail';
 import data from './data.js';
 import axios from 'axios';
+import { useQuery } from 'react-query';
 
 function App() {
+    const [watched, setWatched] = useState([]);
+
+    useEffect(() => {
+        const storedData = JSON.parse(localStorage.getItem('watched'));
+        if (storedData && storedData.length > 0) {
+            setWatched(storedData);
+        } else {
+            localStorage.setItem('watched', JSON.stringify([]));
+        }
+    }, []);
+
+    // let obj = { name: 'kim' };
+    // localStorage.setItem('data', JSON.stringify(obj));
+
+    // let 꺼낸거 = localStorage.getItem('data');
+    // console.log(JSON.parse(꺼낸거).name);
+
     const [shoes, setShoes] = useState(data);
+
     const navi = useNavigate();
     const [buttonClicked, setButtonClicked] = useState(false);
     const [pageNumber, setPageNumber] = useState(2); // 새로운 state 변수 추가
@@ -34,9 +53,20 @@ function App() {
             });
     };
 
+    let result = useQuery('data', () => {
+        return (
+            axios.get('https://codingapple1.github.io/userdata.json').then((data) => {
+                return data.data;
+            }),
+            { staleTime: 2000 }
+        );
+    });
+
+    //useQuery의 장점: ajaxs요청이 성공했는지 쉽게 파악
+
     return (
         <>
-            <Navbar bg="dark" variant="dark">
+            <Navbar bg="light" variant="light">
                 <Container>
                     <Navbar.Brand
                         href="#home"
@@ -69,6 +99,7 @@ function App() {
                             EVENT
                         </Nav.Link>
                     </Nav>
+                    <Nav className="ms-auto">{result.isLoading ? '로딩중....' : result.data.name}</Nav>
                 </Container>
             </Navbar>
             <Routes>
@@ -77,6 +108,7 @@ function App() {
                     element={
                         <>
                             <div className="main-bg"></div>
+                            <h1>진열상품</h1>
                             <div className="container">
                                 <div className="row">
                                     {shoes.map((shoe) => (
@@ -88,6 +120,14 @@ function App() {
                                 ) : pageNumber <= 3 ? (
                                     <button onClick={fetchMoreData}>더보기</button>
                                 ) : null}
+                            </div>
+                            <h1>최근 본 상품</h1>
+                            <div className="container">
+                                <div className="row">
+                                    {watched.map((shoe) => (
+                                        <Card shoes={shoe} key={shoe.id} />
+                                    ))}
+                                </div>
                             </div>
                         </>
                     }

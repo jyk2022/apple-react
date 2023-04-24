@@ -17,6 +17,24 @@ function Detail(props) {
     let [탭, 탭변경] = useState(0);
     let intervalId;
     let TimeOut;
+    useEffect(() => {
+        let 꺼낸거 = localStorage.getItem('watched');
+        if (!꺼낸거) {
+            꺼낸거 = [shoes.id];
+        } else {
+            꺼낸거 = JSON.parse(꺼낸거);
+            꺼낸거.push({
+                id: shoes.id,
+                title: shoes.title,
+                content: shoes.content,
+                price: shoes.price,
+                img: shoes.img,
+            });
+            꺼낸거 = new Set(꺼낸거); // 중복을 제거해주는 것
+            꺼낸거 = Array.from(꺼낸거);
+        }
+        localStorage.setItem('watched', JSON.stringify(꺼낸거));
+    }, [shoes.id]);
 
     useEffect(() => {
         //mount 될 때와 업데이트 될 때 실행됨.
